@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:chat_ease/models/chat_message.dart';
 import 'package:dart_openai/openai.dart';
-import 'package:chat_ease/secrets.dart';
+import 'package:chat_ease/secrets_example.dart';
 
 class ChatApi {
   static const _model = 'gpt-3.5-turbo';
@@ -12,9 +12,6 @@ class ChatApi {
   }
 
   Future<String> completeChat(List<ChatMessage> messages) async {
-    print("completeChat messages:");
-    print(messages);
-
     final chatCompletion = await OpenAI.instance.chat.create(
         model: _model,
         messages: messages
