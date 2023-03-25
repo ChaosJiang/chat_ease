@@ -62,7 +62,7 @@ class SettingsScreenState extends State<SettingsScreen> {
             ),
             subtitle: ElevatedButton(
               onPressed: () {
-                // Handle button press
+                _validateAPIKey();
               },
               child: const Text('Validate'),
             ),
