@@ -22,7 +22,7 @@ class ChatApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => ChatPage(chatApi: chatApi),
-        '/settings': (context) => SettingsScreen()
+        '/settings': (context) => const SettingsScreen()
       },
     );
   }
