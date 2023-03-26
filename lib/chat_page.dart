@@ -24,7 +24,12 @@ class _ChatPageState extends State<ChatPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("chat"),
+        title: const Text("ChatEase"),
+        leading: IconButton(
+            onPressed: () {
+              Navigator.pushNamed(context, '/settings');
+            },
+            icon: const Icon(Icons.settings)),
       ),
       body: Column(children: [
         Expanded(
@@ -51,13 +56,11 @@ class _ChatPageState extends State<ChatPage> {
     });
     try {
       final response = await widget.chatApi.completeChat(_messages);
-      print("completeChat ok");
       setState(() {
         _messages.add(ChatMessage(response, false));
         _awaitingResponse = false;
       });
     } catch (err) {
-      print(err);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('An error occurred. Please try again.')),
       );
