@@ -14,6 +14,8 @@ class SettingsScreen extends StatefulWidget {
 
 class SettingsScreenState extends State<SettingsScreen> {
   final String _defaultModel = 'gpt-3.5-turbo';
+  final String _invalidKeyMsg =
+      'Incorrect API key provided. You can find your API key at https://platform.openai.com/account/api-keys.';
   final List<String> _modelOptions = ['gpt-3.5-turbo', 'gpt-4'];
   String _selectedModel = '';
   String _apiKey = '';
@@ -53,11 +55,27 @@ class SettingsScreenState extends State<SettingsScreen> {
     });
   }
 
-  void _validateAPIKey() async {
+  void _validateAPIKey(BuildContext context) async {
     bool isValid = await widget.chatApi.validateApiKey(_apiKey);
     if (isValid) {
       (await SharedPreferencesManager.getInstance()).setApiKey(_apiKey);
     }
+    _showAlertDialog(context);
+  }
+
+  void _showAlertDialog(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            content: Text(_invalidKeyMsg),
+            actions: [
+              TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Center(child: Text('OK'))),
+            ],
+          );
+        });
   }
 
   @override
@@ -94,7 +112,7 @@ class SettingsScreenState extends State<SettingsScreen> {
             ),
             subtitle: ElevatedButton(
               onPressed: () {
-                _validateAPIKey();
+                _validateAPIKey(context);
               },
               child: const Text('Validate'),
             ),
