@@ -5,16 +5,12 @@ import 'package:chat_ease/api/chat_api.dart';
 import 'package:chat_ease/chat_page.dart';
 
 void main() async {
-  runApp(ChatApp(
-    chatApi: ChatApi(SharedPreferencesManager()),
-    prefsManager: SharedPreferencesManager(),
-  ));
+  runApp(ChatApp(chatApi: ChatApi()));
 }
 
 class ChatApp extends StatelessWidget {
-  const ChatApp({required this.chatApi, required this.prefsManager, super.key});
+  const ChatApp({required this.chatApi, super.key});
   final ChatApi chatApi;
-  final SharedPreferencesManager prefsManager;
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +22,7 @@ class ChatApp extends StatelessWidget {
       routes: {
         '/': (context) => ChatPage(chatApi: chatApi),
         '/settings': (context) => SettingsScreen(
-              prefsManager: prefsManager,
+              chatApi: chatApi,
             )
       },
     );

@@ -1,18 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:chat_ease/store/shared_preferences_manager.dart';
 
-class SettingsScreen extends StatefulWidget {
-  const SettingsScreen({super.key, required this.prefsManager});
+import '../api/chat_api.dart';
 
-  final SharedPreferencesManager prefsManager;
+class SettingsScreen extends StatefulWidget {
+  const SettingsScreen({super.key, required this.chatApi});
+
+  final ChatApi chatApi;
 
   @override
   SettingsScreenState createState() => SettingsScreenState();
 }
 
 class SettingsScreenState extends State<SettingsScreen> {
+  final String _defaultModel = 'gpt-3.5-turbo';
   final List<String> _modelOptions = ['gpt-3.5-turbo', 'gpt-4'];
-  String _selectedModel = 'gpt-3.5-turbo';
+  String _selectedModel = '';
   String _apiKey = '';
 
   @override
@@ -23,16 +26,18 @@ class SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _loadModel() async {
-    String model = await widget.prefsManager.getModel();
+    String model =
+        await (await SharedPreferencesManager.getInstance()).getModel();
     setState(() {
-      _selectedModel = model;
+      _selectedModel = model.isNotEmpty ? model : _defaultModel;
     });
   }
 
   Future<void> _loadApiKey() async {
-    String apiKey = await widget.prefsManager.getApiKey();
+    String apiKey =
+        await (await SharedPreferencesManager.getInstance()).getApiKey();
     setState(() {
-      _apiKey = apiKey;
+      _apiKey = apiKey.isEmpty ? _defaultModel : apiKey;
     });
   }
 
@@ -48,8 +53,11 @@ class SettingsScreenState extends State<SettingsScreen> {
     });
   }
 
-  void _validateAPIKey() {
-    // TODO
+  void _validateAPIKey() async {
+    bool isValid = await widget.chatApi.validateApiKey(_apiKey);
+    if (isValid) {
+      (await SharedPreferencesManager.getInstance()).setApiKey(_apiKey);
+    }
   }
 
   @override
