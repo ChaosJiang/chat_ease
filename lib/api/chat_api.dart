@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:chat_ease/models/chat_message.dart';
 import 'package:dart_openai/openai.dart';
-import 'package:chat_ease/secrets_example.dart';
+import 'package:chat_ease/store/shared_preferences_manager.dart';
 
 class ChatApi {
-  static const _model = 'gpt-3.5-turbo';
+  final SharedPreferencesManager _prefsManager;
 
-  ChatApi() {
-    OpenAI.apiKey = openAiApiKey;
-    OpenAI.organization = openAiOrg;
-  }
+  ChatApi(this._prefsManager);
 
   Future<String> completeChat(List<ChatMessage> messages) async {
+    OpenAI.apiKey = await _prefsManager.getApiKey();
+    OpenAI.organization = await _prefsManager.getApiOrg();
+
     final chatCompletion = await OpenAI.instance.chat.create(
-        model: _model,
+        model: await _prefsManager.getModel(),
         messages: messages
             .map((e) => OpenAIChatCompletionChoiceMessageModel(
                 role: e.isUserMessage ? 'user' : 'assistant',

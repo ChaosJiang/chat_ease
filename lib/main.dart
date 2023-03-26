@@ -1,17 +1,20 @@
+import 'package:chat_ease/store/shared_preferences_manager.dart';
 import 'package:chat_ease/widgets/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:chat_ease/api/chat_api.dart';
 import 'package:chat_ease/chat_page.dart';
 
-void main() {
+void main() async {
   runApp(ChatApp(
-    chatApi: ChatApi(),
+    chatApi: ChatApi(SharedPreferencesManager()),
+    prefsManager: SharedPreferencesManager(),
   ));
 }
 
 class ChatApp extends StatelessWidget {
-  const ChatApp({required this.chatApi, super.key});
+  const ChatApp({required this.chatApi, required this.prefsManager, super.key});
   final ChatApi chatApi;
+  final SharedPreferencesManager prefsManager;
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +25,9 @@ class ChatApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => ChatPage(chatApi: chatApi),
-        '/settings': (context) => const SettingsScreen()
+        '/settings': (context) => SettingsScreen(
+              prefsManager: prefsManager,
+            )
       },
     );
   }

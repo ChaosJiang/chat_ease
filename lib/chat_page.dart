@@ -56,7 +56,6 @@ class _ChatPageState extends State<ChatPage> {
     });
     try {
       final response = await widget.chatApi.completeChat(_messages);
-      print("completeChat ok");
       setState(() {
         _messages.add(ChatMessage(response, false));
         _awaitingResponse = false;
