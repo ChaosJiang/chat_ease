@@ -1,10 +1,13 @@
-import 'package:chat_ease/store/shared_preferences_manager.dart';
+import 'package:chat_ease/utils/shared_preferences_util.dart';
 import 'package:chat_ease/widgets/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:chat_ease/api/chat_api.dart';
 import 'package:chat_ease/chat_page.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  // Initialize  instance.
+  await SharedPreferencesUtil.init();
   runApp(ChatApp(chatApi: ChatApi()));
 }
 

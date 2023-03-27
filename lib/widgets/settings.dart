@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:chat_ease/store/shared_preferences_manager.dart';
+import 'package:chat_ease/utils/shared_preferences_util.dart';
 
 import '../api/chat_api.dart';
 
@@ -13,9 +13,9 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class SettingsScreenState extends State<SettingsScreen> {
-  final String _defaultModel = 'gpt-3.5-turbo';
   final String _invalidKeyMsg =
       'Incorrect API key provided. You can find your API key at https://platform.openai.com/account/api-keys.';
+  final String _validKeyMsg = 'Validate success';
   final List<String> _modelOptions = ['gpt-3.5-turbo', 'gpt-4'];
   String _selectedModel = '';
   String _apiKey = '';
@@ -28,47 +28,48 @@ class SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _loadModel() async {
-    String model =
-        await (await SharedPreferencesManager.getInstance()).getModel();
-    setState(() {
-      _selectedModel = model.isNotEmpty ? model : _defaultModel;
-    });
-  }
-
-  Future<void> _loadApiKey() async {
-    String apiKey =
-        await (await SharedPreferencesManager.getInstance()).getApiKey();
-    setState(() {
-      _apiKey = apiKey.isEmpty ? _defaultModel : apiKey;
-    });
-  }
-
-  void _saveModel(String model) {
+    String model = SharedPreferencesUtil.prefs.getString('open_ai_model') ??
+        'gpt-3.5-turbo';
     setState(() {
       _selectedModel = model;
     });
   }
 
-  void _saveAPIKey(String key) {
+  Future<void> _loadApiKey() async {
+    String apiKey =
+        SharedPreferencesUtil.prefs.getString('open_ai_api_key') ?? '';
     setState(() {
-      _apiKey = key;
+      _apiKey = apiKey;
     });
   }
 
-  void _validateAPIKey(BuildContext context) async {
-    bool isValid = await widget.chatApi.validateApiKey(_apiKey);
-    if (isValid) {
-      (await SharedPreferencesManager.getInstance()).setApiKey(_apiKey);
-    }
-    _showAlertDialog(context);
+  void _saveModel(String model) async {
+    setState(() {
+      _selectedModel = model;
+    });
+    SharedPreferencesUtil.prefs.setString('open_ai_model', model);
   }
 
-  void _showAlertDialog(BuildContext context) {
+  void _saveAPIKey(String key) async {
+    setState(() {
+      _apiKey = key;
+    });
+    SharedPreferencesUtil.prefs.setString('open_ai_api_key', key);
+  }
+
+  Future<bool> _validateAPIKey() async {
+    // if (isValid) {
+    //   (await SharedPreferencesManager.getInstance()).setApiKey(_apiKey);
+    // }
+    return await widget.chatApi.validateApiKey(_apiKey);
+  }
+
+  void _showAlertDialog(BuildContext context, String msg) {
     showDialog(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            content: Text(_invalidKeyMsg),
+            content: Text(msg),
             actions: [
               TextButton(
                   onPressed: () => Navigator.pop(context),
@@ -112,7 +113,12 @@ class SettingsScreenState extends State<SettingsScreen> {
             ),
             subtitle: ElevatedButton(
               onPressed: () {
-                _validateAPIKey(context);
+                _validateAPIKey().then((isValid) => {
+                      if (isValid)
+                        _showAlertDialog(context, _validKeyMsg)
+                      else
+                        _showAlertDialog(context, _invalidKeyMsg)
+                    });
               },
               child: const Text('Validate'),
             ),
