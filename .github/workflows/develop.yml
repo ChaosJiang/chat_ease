@@ -7,9 +7,9 @@ name: Flutter develop
 
 on:
   push:
-    branches: [ "feat-dart-yml" ]
+    branches: [ "main" ]
   pull_request:
-    branches: [ "feat-dart-yml" ]
+    branches: [ "main" ]
 
 jobs:
   build:
