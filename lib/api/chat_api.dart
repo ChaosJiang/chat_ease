@@ -23,7 +23,6 @@ class ChatApi {
   Future<bool> validateApiKey(String key) async {
     try {
       OpenAI.apiKey = key;
-      print('key: $key');
       OpenAI.organization =
           SharedPreferencesUtil.prefs.getString('open_ai_org');
 
