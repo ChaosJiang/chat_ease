@@ -33,14 +33,15 @@ class _ChatPageState extends State<ChatPage> {
       ),
       body: Column(children: [
         Expanded(
-            child: ListView(
+            child: Scrollbar(
+                child: ListView(
           children: [
             ..._messages.map(
               (msg) => MessageBubble(
                   content: msg.content, isUserMessage: msg.isUserMessage),
             )
           ],
-        )),
+        ))),
         MessageComposer(
           onSubmitted: _onSubmitted,
           awaitingResponse: _awaitingResponse,
